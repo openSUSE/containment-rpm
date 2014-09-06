@@ -10,7 +10,7 @@ updating the Build Service package from Github.
 
 .. _openSUSE/containment: https://github.com/openSUSE/containment-rpm
 .. _Devel:StudioOnline:containment_common_packages/containment-rpm:
-  https://build.suse.de/package/show?package=containment-rpm&project=home%3Arneuhauser
+  https://build.suse.de/package/show?package=containment-rpm&project=Devel:StudioOnline:containment_common_packages
 
 Hacking
 =======
