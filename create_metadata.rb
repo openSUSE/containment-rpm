@@ -85,12 +85,12 @@ def load_xml(path)
   end
 end
 
-def create_metadata(build_dir, containment_name)
+def create_metadata(build_dir)
   Dir["#{build_dir}/#{KIWI_DIR}/*boot/suse-*"].each do |config_path|
     next unless File.directory?(config_path) && File.exists?("#{config_path}/config.xml")
 
     basesystem = File.basename(config_path)
-    File.open("#{@store_files}/#{basesystem}.json", 'w') do |file|
+    File.open("/tmp/#{basesystem}.json", 'w') do |file|
       file.write(
         JSON.pretty_generate(
           create_json(
@@ -103,15 +103,8 @@ def create_metadata(build_dir, containment_name)
 end
 
 
-# The path were we will store the created metadata
-if ARGV[0]
-  if File.directory?(ARGV[0])
-    @store_files = ARGV[0]
-  else
-    abort("Invalid build directory\n")
-  end
-else
-  @store_files = "/tmp"
+unless File.directory?(ARGV[0])
+  abort("Invalid build directory\n")
 end
 
 create_metadata(ARGV[0])
