@@ -13,10 +13,13 @@ STEM=Containment-Studio
 EXT=.qcow2
 SOURCE=$(echo $STEM-*$EXT)
 
+# sanitize qcow2 name, obs is adding a Build\d.\d suffix
+sanitized_name=$(echo $SOURCE | sed -r "s/-Build[[:digit:]]\.[[:digit:]]+//g")
+
 # extract os/platform, version, release from the source tarball
-set -- $(echo $SOURCE | sed -r "s/(.*)-(.*)$EXT/\1 \2/")
+set -- $(echo $sanitized_name | sed -r "s/(.*)-(.*)$EXT/\1 \2/")
 NAME=$(echo $1 | sed -r "s/.x86_64//g")
-VERSION=$2
+VERSION=$2 
 RELEASE=$(date +%Y%m%d%H%M%S)
 
 echo "name $NAME"
