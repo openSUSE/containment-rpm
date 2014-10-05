@@ -30,9 +30,14 @@ sed -e "s/__NAME__/$NAME/g" \
     < $FILES_DIR/image.spec.in \
     > $FILES_DIR/image.spec
 
+is_qcow_v2() { (file $1 | grep "QEMU" | grep "QCOW" | grep "v2") }
 
 ruby $FILES_DIR/create_metadata.rb $KIWI_SOURCE
 mv /tmp/metadata $TARGET_DIR
+if ! (is_qcow_v2 $SOURCE); then
+  qemu-img convert -O qcow2 -o compat=0.10 $SOURCE /tmp/o.qcow2
+  mv /tmp/o.qcow2 $SOURCE
+fi
 tar -cjf $RPM_SOURCE_DIR/$NAME-$VERSION-$RELEASE-vmx.tar.bz2 $SOURCE metadata
 rpmbuild -ba $FILES_DIR/image.spec
 
