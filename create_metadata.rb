@@ -26,7 +26,7 @@ def get_packages(node, options = {})
   matcher = [
     attr_query("type", options[:type]),
     attr_query("profiles", options[:profile]),
-  ].join(" and ")
+  ].join(" ")
 
   arch = attr_query("arch", ["x86_64", "i686"].grep(options[:arch]).pop)
 
