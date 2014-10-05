@@ -13,49 +13,58 @@ def get_profiles(node)
 end
 
 def get_packages(node, options = {})
-  matcher = "@type='image'"
-  if options[:only_bootstrap]
-    matcher << " @type='bootstrap'"
+  matcher = if options[:bootstrap]
+    "@type='bootstrap'"
+  else
+    "@type='image'"
   end
+
   if options[:profile]
-    matcher << " @profiles=#{options[:profile]}"
+    matcher << " and @profiles='#{options[:profile]}'"
   end
 
   REXML::XPath.each(node, "//image/packages[#{matcher}]/package/@name").map(&:value)
 end
 
-def create_profiles(node)
-  get_profiles(node).map do |profile|
-    {
-      :name => profile,
-      :packages => get_packages(node, :profile => profile)
+def create_profile_packages(node)
+  profile_packages = {}
+  get_profiles(node).each do |profile|
+    profile_packages[profile.to_sym] = {
+      :image     => get_packages(node, :profile => profile),
+      :bootstrap => get_packages(node, { :bootstrap => true, :profile => profile })
     }
   end
+
+  profile_packages
 end
 
 # {
-#   "profiles": [
-#     {
-#       "name": "...",
-#       "packages": [...]
+#   "image_type": "oem",
+#   "data": {
+#     "profiles": [...],
+#     "profile_packages": {
+#       "std" => {
+#         "bootstrap": [...],
+#         "image": [...]
+#       }, {
+#         ...
+#       },
 #     },
-#     {
-#       ...
+#     "packages": {
+#       "image": [...],
+#       "bootstrap": [...]
 #     }
-#   ],
-#   "packages": {
-#     "image": [...],
-#     "bootstrap": [...]
 #   }
 # }
 def create_pkgs_for_image_type(node, image_type)
   {
     :image_type => image_type,
     :data       => {
-      :profiles => create_profiles(node),
-      :packages => {
+      :profiles         => get_profiles(node),
+      :profile_packages => create_profile_packages(node),
+      :packages         => {
         :image     => get_packages(node),
-        :bootstrap => get_packages(node, { :only_bootstrap => true })
+        :bootstrap => get_packages(node, { :bootstrap => true })
       }
     }
   }
@@ -64,7 +73,7 @@ end
 def create_json(node)
   IMAGE_TYPES.map do |image_type|
     create_pkgs_for_image_type(node, image_type)
-  end.to_json
+  end
 end
 
 def load_xml(path)
@@ -100,7 +109,7 @@ unless File.directory?(ARGV[0])
   abort("Invalid build directory\n")
 end
 
-unless ARGV[1] =~ /\A[\w\-]*\Z/
+unless ARGV[1] =~ /\A\S*\Z/
   abort("Invalid containment name\n")
 end
 
