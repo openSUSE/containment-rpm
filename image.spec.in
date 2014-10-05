@@ -25,10 +25,10 @@ Authors:
 
 %install
 
-install -d -m 755 $RPM_BUILD_ROOT/usr/share/studio/metadata
+install -d -m 755 $RPM_BUILD_ROOT/usr/share/studio/metadata/%{name}-%{version}
 install -d -m 755 $RPM_BUILD_ROOT/usr/share/studio/image
 mv *.qcow2 $RPM_BUILD_ROOT/usr/share/studio/image
-mv metadata/%{name}-%{version} $RPM_BUILD_ROOT/usr/share/studio/metadata
+mv metadata/* $RPM_BUILD_ROOT/usr/share/studio/metadata/%{name}-%{version}/
 
 %clean
 rm -rf $RPM_BUILD_ROOT

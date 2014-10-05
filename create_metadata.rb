@@ -89,12 +89,8 @@ def create_metadata(build_dir, containment_name)
   Dir["#{build_dir}/#{KIWI_DIR}/*boot/suse-*"].each do |config_path|
     next unless File.directory?(config_path) && File.exists?("#{config_path}/config.xml")
 
-    # The path were we will store the created metadata
-    path = "#{build_dir}/#{METADATA_DIR}/#{containment_name}"
-    FileUtils.mkdir_p(path)
-
     basesystem = File.basename(config_path)
-    File.open("#{path}/#{basesystem}.json", 'w') do |file|
+    File.open("#{@store_files}/#{basesystem}.json", 'w') do |file|
       file.write(
         JSON.pretty_generate(
           create_json(
@@ -106,13 +102,17 @@ def create_metadata(build_dir, containment_name)
   end
 end
 
-unless File.directory?(ARGV[0])
-  abort("Invalid build directory\n")
+
+# The path were we will store the created metadata
+if ARGV[0]
+  if File.directory?(ARGV[0])
+    @store_files = ARGV[0]
+  else
+    abort("Invalid build directory\n")
+  end
+else
+  @store_files = "/tmp"
 end
 
-unless ARGV[1] =~ /\A\S*\Z/
-  abort("Invalid containment name\n")
-end
-
-create_metadata(ARGV[0], ARGV[1])
+create_metadata(ARGV[0])
 

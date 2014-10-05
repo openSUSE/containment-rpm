@@ -31,8 +31,8 @@ sed -e "s/__NAME__/$NAME/g" \
     > $FILES_DIR/image.spec
 
 
-ruby $FILES_DIR/create_metadata.rb $KIWI_SOURCE "$NAME-$VERSION"
-mv $KIWI_SOURCE/usr/share/studio/metadata .
+ruby $FILES_DIR/create_metadata.rb $KIWI_SOURCE
+mv /tmp/metadata .
 tar -cjf $RPM_SOURCE_DIR/$NAME-$VERSION-$RELEASE-vmx.tar.bz2 $SOURCE
 rpmbuild -ba $FILES_DIR/image.spec
 
