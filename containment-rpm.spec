@@ -39,13 +39,11 @@ OBS kiwi_post_run hook to wrap a kiwi-produced image in an rpm package.
 mkdir -p %{buildroot}/usr/lib/build/
 install -m 644 image.spec.in %{buildroot}/usr/lib/build/
 install -m 755 kiwi_post_run %{buildroot}/usr/lib/build/
-install -m 755 create_metadata.rb %{buildroot}/usr/lib/build/
 
 %files
 %defattr(-,root,root)
 /usr/lib/build/kiwi_post_run
 /usr/lib/build/image.spec.in
-/usr/lib/build/create_metadata.rb
 
 %changelog
 
