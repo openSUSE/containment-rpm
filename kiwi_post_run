@@ -3,6 +3,7 @@
 : ${TOPDIR:=/usr/src/packages}
 
 TARGET_DIR=$TOPDIR/KIWI/
+KIWI_SOURCE=$TOPDIR/KIWIROOT-vmx
 RPM_SOURCE_DIR=$TOPDIR/SOURCES
 FILES_DIR=/usr/lib/build
 
@@ -29,8 +30,9 @@ sed -e "s/__NAME__/$NAME/g" \
     < $FILES_DIR/image.spec.in \
     > $FILES_DIR/image.spec
 
-ruby $FILES_DIR/create_metadata.rb $RPM_SOURCE_DIR "$NAME-$VERSION"
-mv $RPM_SOURCE_DIR/usr/share/studio/metadata .
+
+ruby $FILES_DIR/create_metadata.rb $KIWI_SOURCE "$NAME-$VERSION"
+mv /usr/share/studio/metadata .
 tar -cjf $RPM_SOURCE_DIR/$NAME-$VERSION-$RELEASE-vmx.tar.bz2 $SOURCE
 rpmbuild -ba $FILES_DIR/image.spec
 
