@@ -10,25 +10,21 @@ ARCHS = ["all", "x86_64", "i686"]
 KIWI_DIR = "/usr/share/kiwi/image"
 METADATA_DIR = "/usr/share/studio/metadata"
 
+def attr_query(name, val)
+  (val.nil? || val.empty?) ? "not(@#{name})" : "@#{name}='#{val}'"
+end
+
 def get_profiles(node)
   REXML::XPath.each(node, "//image/profiles/profile/@name").map(&:value)
 end
 
 def get_packages(node, options = {})
-  matcher = "@type='#{options[:type]}'"
+  matcher = [
+    attr_query("type", options[:type]),
+    attr_query("profiles", options[:profile]),
+  ].join(" and ")
 
-  if options[:profile]
-    matcher << " and @profiles='#{options[:profile]}'"
-  else
-    matcher << " and not(@profiles)"
-  end
-
-  case options[:arch]
-  when "x86_64", "i686"
-    arch = "@arch='#{options[:arch]}'"
-  else
-    arch = "not(@arch)"
-  end
+  arch = attr_query("arch", ["x86_64", "i686"].grep(options[:arch]).pop)
 
   REXML::XPath.each(node, "//image/packages[#{matcher}]/package[#{arch}]/@name").map(&:value)
 end
@@ -102,22 +98,15 @@ def create_pkgs_for_image_type(node, image_type)
   }
 end
 
-def create_json_per_image_type(config_pathes)
+def create_json_per_image_type(config_paths)
   IMAGE_TYPES.map do |image_type|
-    path = config_pathes.find { |f| f =~ /#{image_type}/ }
-    next unless File.exists?("#{path}/config.xml")
+    path = config_paths.find { |f| f =~ /#{image_type}/ }
+    file = "#{path}/config.xml"
+    next unless File.exists?(file)
 
-    node = load_xml("#{path}/config.xml")
+    node = REXML::Document.new(File.read(file))
     create_pkgs_for_image_type(node, image_type)
   end.compact
-end
-
-def load_xml(path)
-  if File.exists?(path)
-    REXML::Document.new(File.read(path))
-  else
-    raise "File '#{path}' does not exist."
-  end
 end
 
 def sort_by_base_system(files)
