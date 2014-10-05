@@ -2,7 +2,7 @@
 
 : ${TOPDIR:=/usr/src/packages}
 
-TARGET_DIR=$TOPDIR/KIWI-vmx/
+TARGET_DIR=$TOPDIR/KIWI/
 RPM_SOURCE_DIR=$TOPDIR/SOURCES
 FILES_DIR=/usr/lib/build
 
