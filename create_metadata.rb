@@ -6,6 +6,7 @@ require "rubygems"
 require "json"
 
 IMAGE_TYPES = ["oem", "iso", "net", "vmx"]
+ARCHS = ["all", "x86_64", "i686"] 
 KIWI_DIR = "/usr/share/kiwi/image"
 METADATA_DIR = "/usr/share/studio/metadata"
 
@@ -14,59 +15,89 @@ def get_profiles(node)
 end
 
 def get_packages(node, options = {})
-  matcher = if options[:bootstrap]
-    "@type='bootstrap'"
-  else
-    "@type='image'"
-  end
+  matcher = "@type='#{options[:type]}'"
 
   if options[:profile]
     matcher << " and @profiles='#{options[:profile]}'"
+  else
+    matcher << " and not(@profiles)"
   end
 
-  REXML::XPath.each(node, "//image/packages[#{matcher}]/package/@name").map(&:value)
+  case options[:arch]
+  when "x86_64", "i686"
+    arch = "@arch='#{options[:arch]}'"
+  else
+    arch = "not(@arch)"
+  end
+
+  REXML::XPath.each(node, "//image/packages[#{matcher}]/package[#{arch}]/@name").map(&:value)
 end
 
 def create_profile_packages(node)
   profile_packages = {}
   get_profiles(node).each do |profile|
-    profile_packages[profile.to_sym] = {
-      :image     => get_packages(node, :profile => profile),
-      :bootstrap => get_packages(node, { :bootstrap => true, :profile => profile })
-    }
+    tmp = create_package_object(node, { :profile => profile })
+    profile_packages[profile.to_sym] = tmp unless tmp.empty?
   end
 
   profile_packages
 end
 
 # {
-#   "image_type": "oem",
-#   "data": {
+#   "bootstrap": {
+#     "all": [...],
+#     "x86_64": [...]
+#   },
+#   "image": {
+#     "i686": [...]
+#   }
+# }
+#
+def create_package_object(node, options = {})
+  data = {}
+  [:image, :bootstrap].each do |type|
+    tmp = {}
+
+    ARCHS.each do |arch|
+      opts = options.update(
+        :arch => arch,
+        :type => type
+      )
+
+      pkgs = get_packages(node, opts)
+      # Prevent from writing empty json data
+      tmp[arch.to_sym] = pkgs unless pkgs.empty?
+    end
+    # Prevent from writing empty json data
+    data[type] = tmp unless tmp.empty?
+  end
+
+  data
+end
+
+# {
+#   "oem": {
 #     "profiles": [...],
 #     "profile_packages": {
 #       "std" => {
-#         "bootstrap": [...],
-#         "image": [...]
+#         "bootstrap": {},
+#         "image": {}
 #       }, {
 #         ...
 #       },
 #     },
 #     "packages": {
-#       "image": [...],
-#       "bootstrap": [...]
+#       "image": {},
+#       "bootstrap": {}
 #     }
 #   }
 # }
 def create_pkgs_for_image_type(node, image_type)
   {
-    :image_type => image_type,
-    :data       => {
+    image_type.to_sym => {
       :profiles         => get_profiles(node),
       :profile_packages => create_profile_packages(node),
-      :packages         => {
-        :image     => get_packages(node),
-        :bootstrap => get_packages(node, { :bootstrap => true })
-      }
+      :packages         => create_package_object(node)
     }
   }
 end
