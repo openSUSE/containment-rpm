@@ -6,7 +6,6 @@ Release:        __RELEASE__
 Group:          System/Management
 License:        GPLv2
 Source:         %{name}-%{version}-%{release}-vmx.tar.bz2
-SOURCE2:        metadata.tar.bz2
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildArch:      noarch
 
@@ -20,7 +19,6 @@ Authors:
 
 %prep
 %setup -c -n %name
-%setup -c -n metadata.tar.bz2
 
 %build
 # empty no compile job
