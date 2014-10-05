@@ -26,7 +26,6 @@ Url:            https://github.com/openSUSE/%{name}
 Group:          System/Management
 Source:         %{name}-%{version}.tar.bz2
 BuildRequires:  filesystem
-Requires:       rubygem-json_pure, qemu-tools
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildArch:      noarch
 
