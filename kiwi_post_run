@@ -1,22 +1,21 @@
-#!/bin/sh -eu
+#!/bin/sh
+
+set -e
+set -u
 
 : ${TOPDIR:=/usr/src/packages}
 
-TARGET_DIR=$TOPDIR/KIWI
-KIWI_SOURCE=$TOPDIR/KIWIROOT-vmx/
-RPM_SOURCE_DIR=$TOPDIR/SOURCES
-FILES_DIR=/usr/lib/build
+IMAGE_DIR=$TOPDIR/KIWI
+BUILD_DIR=/usr/lib/build
 
-cd $TARGET_DIR
+cd $IMAGE_DIR
 
-STEM=Containment-Studio
-EXT=.qcow2
-SOURCE=$(echo $STEM-*$EXT)
+STEM=SUSE-CLOUD-4-x86_64
+EXT=.iso
+IMAGE=$(echo ${STEM}1$EXT)
 
-# extract name and version from the source tarball
-set -- $(echo $SOURCE | sed -r 's/(.*)\.x86_64-([^-]*)(-Build.*)?'$EXT'$/\1 \2/')
-NAME=$1
-VERSION=$2
+NAME=$STEM-iso
+VERSION=1
 RELEASE=$(date +%Y%m%d%H%M%S)
 
 echo "name $NAME"
@@ -26,20 +25,13 @@ echo "release $RELEASE"
 sed -e "s/__NAME__/$NAME/g" \
     -e "s/__VERSION__/$VERSION/g" \
     -e "s/__RELEASE__/$RELEASE/g" \
-    -e "s/__SOURCE__/$SOURCE/g" \
-    < $FILES_DIR/image.spec.in \
-    > $FILES_DIR/image.spec
+    -e "s/__SOURCE__/$IMAGE/g" \
+    < $BUILD_DIR/image.spec.in \
+    > $BUILD_DIR/image.spec
 
-is_qcow_v2() { (file $1 | grep "QEMU" | grep "QCOW" | grep "v2") }
+mv $IMAGE $TOPDIR/SOURCES
 
-ruby $FILES_DIR/create_metadata.rb $KIWI_SOURCE
-mv /tmp/metadata $TARGET_DIR
-if ! (is_qcow_v2 $SOURCE); then
-  qemu-img convert -O qcow2 -o compat=0.10 $SOURCE /tmp/o.qcow2
-  mv /tmp/o.qcow2 $SOURCE
-fi
-tar -cjf $RPM_SOURCE_DIR/$NAME-$VERSION-$RELEASE-vmx.tar.bz2 $SOURCE metadata
-rpmbuild -ba $FILES_DIR/image.spec
+rpmbuild -ba $BUILD_DIR/image.spec
 
 # required for the BS to find the rpm, because it is
 # a "non-standard result file for KIWI"
