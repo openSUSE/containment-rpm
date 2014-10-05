@@ -11,7 +11,11 @@ KIWI_DIR = "/usr/share/kiwi/image"
 METADATA_DIR = "/usr/share/studio/metadata"
 
 def attr_query(name, val)
-  (val.nil? || val.empty?) ? "not(@#{name})" : "@#{name}='#{val}'"
+  if val
+    "@#{name}='#{val}'"
+  else
+    "not(@#{name})"
+  end
 end
 
 def get_profiles(node)
