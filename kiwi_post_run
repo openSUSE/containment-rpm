@@ -13,9 +13,9 @@ STEM=Containment-Studio
 EXT=.qcow2
 SOURCE=$(echo $STEM-*$EXT)
 
-# extract os/platform, version, release from the source tarball
-set -- $(echo $SOURCE | sed -r "s/(.*)-(.*)-.*$EXT/\1 \2/")
-NAME=$(echo $1 | sed -r "s/.x86_64//g")
+# extract name and version from the source tarball
+set -- $(echo $SOURCE | sed -r 's/(.*)\.x86_64-([^-]*)(-Build.*)?'$EXT'$/\1 \2/')
+NAME=$1
 VERSION=$2
 RELEASE=$(date +%Y%m%d%H%M%S)
 

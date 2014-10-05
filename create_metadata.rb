@@ -12,7 +12,7 @@ METADATA_DIR = "/usr/share/studio/metadata"
 
 def attr_query(name, val)
   if val
-    "contains(@#{name}, '#{val}')"
+    "@#{name}='#{val}'"
   else
     "not(@#{name})"
   end
@@ -23,14 +23,26 @@ def get_profiles(node)
 end
 
 def get_packages(node, options = {})
-  matcher = [
-    attr_query("type", options[:type]),
-    attr_query("profiles", options[:profile]),
-  ].join(" and ")
+  matcher = attr_query("type", options[:type])
+  matcher << " and not(@profiles)" unless options[:profile]
 
   arch = attr_query("arch", ["x86_64", "i686"].grep(options[:arch]).pop)
 
-  REXML::XPath.each(node, "//image/packages[#{matcher}]/package[#{arch}]/@name").map(&:value)
+  elements = REXML::XPath.match(node, "//image/packages[#{matcher}]")
+
+  if options[:profile]
+    elements.reject! do |element|
+      !element.attributes["profiles"] ||
+        !element.attributes["profiles"].split(",").include?(options[:profile])
+    end
+  end
+
+  # There is either 1 or 0 nodes that matches both type and profiles attribute
+  if elements.count == 1
+    REXML::XPath.each(elements.first, "package[#{arch}]/@name").map(&:value)
+  else
+    []
+  end
 end
 
 def create_profile_packages(node)
@@ -142,10 +154,9 @@ def create_metadata(build_dir)
   end
 end
 
+if __FILE__ == $0 then
+  abort("Invalid build directory\n") unless File.directory?(ARGV[0])
 
-unless File.directory?(ARGV[0])
-  abort("Invalid build directory\n")
+  create_metadata(ARGV[0])
 end
-
-create_metadata(ARGV[0])
 
