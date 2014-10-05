@@ -12,7 +12,7 @@ METADATA_DIR = "/usr/share/studio/metadata"
 
 def attr_query(name, val)
   if val
-    "@#{name}='#{val}'"
+    "contains(@#{name}, '#{val}')"
   else
     "not(@#{name})"
   end
@@ -26,7 +26,7 @@ def get_packages(node, options = {})
   matcher = [
     attr_query("type", options[:type]),
     attr_query("profiles", options[:profile]),
-  ].join(" ")
+  ].join(" and ")
 
   arch = attr_query("arch", ["x86_64", "i686"].grep(options[:arch]).pop)
 
