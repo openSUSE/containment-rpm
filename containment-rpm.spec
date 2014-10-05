@@ -15,7 +15,7 @@
 # norootforbuild
 
 Name:           containment-rpm
-Version:        __VERSION__
+Version:        0
 Release:        0
 License:        MIT
 Summary:        Wraps OBS/kiwi-built images in rpms.
