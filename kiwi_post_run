@@ -30,6 +30,7 @@ sed -e "s/__NAME__/$NAME/g" \
     > $FILES_DIR/image.spec
 
 ruby $FILES_DIR/create_metadata.rb $RPM_SOURCE_DIR "$NAME-$VERSION"
+mv $RPM_SOURCE_DIR/usr/share/studio/metadata .
 tar -cjf $RPM_SOURCE_DIR/$NAME-$VERSION-$RELEASE-vmx.tar.bz2 $SOURCE
 rpmbuild -ba $FILES_DIR/image.spec
 
