@@ -116,7 +116,7 @@ end
 
 def create_json_per_image_type(config_paths)
   IMAGE_TYPES.map do |image_type|
-    path = config_paths.find { |f| f =~ /#{image_type}/ }
+    path = config_paths.find { |f| f =~ /\/#{image_type}boot\// }
     file = "#{path}/config.xml"
     next unless File.exists?(file)
 
