@@ -24,7 +24,7 @@ License:        MIT
 Summary:        Wraps OBS/kiwi-built images in rpms.
 Url:            https://github.com/openSUSE/%{name}
 Group:          System/Management
-Source:         %{name}-%{version}.tar.gz
+Source:         %{name}-%{version}.tar.bz2
 BuildRequires:  filesystem
 Requires:       rubygem-json_pure, qemu-tools
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
