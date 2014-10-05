@@ -2,6 +2,7 @@
 
 require "rexml/document"
 require "fileutils"
+require "rubygems"
 require "json"
 
 IMAGE_TYPES = ["oem", "iso", "net", "vmx"]
