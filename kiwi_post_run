@@ -2,7 +2,8 @@
 
 : ${TOPDIR:=/usr/src/packages}
 
-TARGET_DIR=$TOPDIR/KIWI/
+TARGET_DIR=$TOPDIR/KIWI
+KIWI_SOURCE=$TOPDIR/KIWIROOT-vmx/
 RPM_SOURCE_DIR=$TOPDIR/SOURCES
 FILES_DIR=/usr/lib/build
 
@@ -13,7 +14,7 @@ EXT=.qcow2
 SOURCE=$(echo $STEM-*$EXT)
 
 # extract os/platform, version, release from the source tarball
-set -- $(echo $SOURCE | sed -r "s/(.*)-(.*)$EXT/\1 \2/")
+set -- $(echo $SOURCE | sed -r "s/(.*)-(.*)-.*$EXT/\1 \2/")
 NAME=$(echo $1 | sed -r "s/.x86_64//g")
 VERSION=$2
 RELEASE=$(date +%Y%m%d%H%M%S)
@@ -29,7 +30,10 @@ sed -e "s/__NAME__/$NAME/g" \
     < $FILES_DIR/image.spec.in \
     > $FILES_DIR/image.spec
 
-tar -cjf $RPM_SOURCE_DIR/$NAME-$VERSION-$RELEASE-vmx.tar.bz2 $SOURCE
+
+ruby $FILES_DIR/create_metadata.rb $KIWI_SOURCE
+mv /tmp/metadata $TARGET_DIR
+tar -cjf $RPM_SOURCE_DIR/$NAME-$VERSION-$RELEASE-vmx.tar.bz2 $SOURCE metadata
 rpmbuild -ba $FILES_DIR/image.spec
 
 # required for the BS to find the rpm, because it is
