@@ -33,6 +33,8 @@ sed -e "s/__NAME__/$NAME/g" \
 
 ruby $FILES_DIR/create_metadata.rb $KIWI_SOURCE
 mv /tmp/metadata $TARGET_DIR
+qemu-img convert -O qcow2 -o compat=0.10 $SOURCE /tmp/o.qcow2
+mv /tmp/o.qcow2 $SOURCE
 tar -cjf $RPM_SOURCE_DIR/$NAME-$VERSION-$RELEASE-vmx.tar.bz2 $SOURCE metadata
 rpmbuild -ba $FILES_DIR/image.spec
 
