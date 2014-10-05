@@ -25,6 +25,7 @@ Authors:
 
 %install
 
+install -d -m 755 $RPM_BUILD_ROOT/usr/share/studio/metadata
 install -d -m 755 $RPM_BUILD_ROOT/usr/share/studio/image
 mv *.qcow2 $RPM_BUILD_ROOT/usr/share/studio/image
 
@@ -34,5 +35,7 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(-, root, root)
 %dir /usr/share/studio
+/usr/share/studio/metadata
 /usr/share/studio/image
+
 
