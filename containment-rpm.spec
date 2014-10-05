@@ -1,4 +1,7 @@
-# Copyright (c) 2010 SUSE LINUX Products GmbH, Nuernberg, Germany.
+#
+# spec file for package containment-rpm
+#
+# Copyright (c) 2012 SUSE LINUX Products GmbH, Nuernberg, Germany.
 #
 # All modifications and additions to the file contributed by third parties
 # remain the property of their copyright owners, unless otherwise agreed
@@ -46,4 +49,3 @@ install -m 755 kiwi_post_run %{buildroot}/usr/lib/build/
 /usr/lib/build/image.spec.in
 
 %changelog
-
