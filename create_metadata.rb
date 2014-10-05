@@ -6,7 +6,7 @@ require "rubygems"
 require "json"
 
 IMAGE_TYPES = ["oem", "iso", "net", "vmx"]
-ARCHS = ["all", "x86_64", "i686"] 
+ARCHS = ["all", "x86_64", "i686"]
 KIWI_DIR = "/usr/share/kiwi/image"
 METADATA_DIR = "/usr/share/studio/metadata"
 
@@ -102,10 +102,14 @@ def create_pkgs_for_image_type(node, image_type)
   }
 end
 
-def create_json(node)
+def create_json_per_image_type(config_pathes)
   IMAGE_TYPES.map do |image_type|
+    path = config_pathes.find { |f| f =~ /#{image_type}/ }
+    next unless File.exists?("#{path}/config.xml")
+
+    node = load_xml("#{path}/config.xml")
     create_pkgs_for_image_type(node, image_type)
-  end
+  end.compact
 end
 
 def load_xml(path)
@@ -116,19 +120,29 @@ def load_xml(path)
   end
 end
 
+def sort_by_base_system(files)
+  data = {}
+
+  files.each do |file|
+    next unless File.directory?(file)
+
+    base_system = File.basename(file)
+    data[base_system] ||= []
+    data[base_system] << file
+  end
+
+  data
+end
+
 def create_metadata(build_dir)
-  Dir["#{build_dir}/#{KIWI_DIR}/*boot/suse-*"].each do |config_path|
-    next unless File.directory?(config_path) && File.exists?("#{config_path}/config.xml")
+  files = Dir["#{build_dir}/#{KIWI_DIR}/*boot/suse-*"].reject { |f| f =~ /containment$/ }
 
-    basesystem = File.basename(config_path)
-
+  sort_by_base_system(files).each do |base_system, files|
     FileUtils.mkdir_p("/tmp/metadata")
-    File.open("/tmp/metadata/#{basesystem}.json", 'w') do |file|
+    File.open("/tmp/metadata/#{base_system}.json", 'w') do |file|
       file.write(
         JSON.pretty_generate(
-          create_json(
-            load_xml("#{config_path}/config.xml")
-          )
+          create_json_per_image_type(files)
         )
       )
     end
