@@ -90,6 +90,8 @@ def create_metadata(build_dir)
     next unless File.directory?(config_path) && File.exists?("#{config_path}/config.xml")
 
     basesystem = File.basename(config_path)
+
+    FileUtils.mkdir_p("/tmp/metadata")
     File.open("/tmp/metadata/#{basesystem}.json", 'w') do |file|
       file.write(
         JSON.pretty_generate(
