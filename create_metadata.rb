@@ -87,7 +87,7 @@ end
 
 def create_metadata(build_dir, containment_name)
   Dir["#{build_dir}/#{KIWI_DIR}/*boot/suse-*"].each do |config_path|
-    next unless File.directory?(config_path) && File.exists("#{config_path}/config.xml")
+    next unless File.directory?(config_path) && File.exists?("#{config_path}/config.xml")
 
     # The path were we will store the created metadata
     path = "#{build_dir}/#{METADATA_DIR}/#{containment_name}"
