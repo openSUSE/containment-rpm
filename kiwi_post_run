@@ -29,7 +29,7 @@ sed -e "s/__NAME__/$NAME/g" \
     < $BUILD_DIR/image.spec.in \
     > $BUILD_DIR/image.spec
 
-mv $IMAGE $TOPDIR/SOURCES
+ln $IMAGE $TOPDIR/SOURCES
 
 rpmbuild -ba $BUILD_DIR/image.spec
 
