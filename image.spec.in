@@ -10,6 +10,7 @@ License:        GPLv2
 Source:         __SOURCE__
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildArch:      noarch
+BuildRequires:  containment-rpm-config
 
 %description
 This package installs the SUSE Cloud product .iso into %containment_image_dest_dir.  It

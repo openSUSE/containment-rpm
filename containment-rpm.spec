@@ -28,6 +28,7 @@ Source:         %{name}-%{version}.tar.bz2
 BuildRequires:  filesystem
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildArch:      noarch
+Requires:       containment-rpm-config
 
 %description
 OBS kiwi_post_run hook to wrap a kiwi-produced image in an rpm package.
