@@ -32,12 +32,12 @@ BuildArch:      noarch
 %description
 OBS kiwi_post_run hook to wrap a kiwi-produced image in an rpm package.
 
-This package should be required by the .kiwi XML file, so that the
-kiwi_post_run hook is present in the kiwi image and gets executed at
-the end of the image build.  It will then build an rpm which contains
-the newly-produced image from kiwi (using image.spec.in), and place
-the rpm in the correct location that it becomes an additional build
-artefact.
+This package should be required by the Build Service project's meta
+prjconf, so that the kiwi_post_run hook is present in the kiwi image
+and gets executed at the end of the image build.  It will then build
+an rpm which contains the newly-produced image from kiwi (using
+image.spec.in), and place the rpm in the correct location that it
+becomes an additional build artefact.
 
 %prep
 %setup -q
