@@ -10,8 +10,9 @@ BUILD_DIR=/usr/lib/build
 
 cd $IMAGE_DIR
 
-STEM=SUSE-CLOUD-4-x86_64
-EXT=.iso
+STEM=$(rpm --eval '%containment_image_name')
+EXT=$( rpm --eval '%containment_image_extension')
+EXT=".${EXT#.}"
 IMAGE=$(echo ${STEM}1$EXT)
 
 NAME=$STEM-iso
