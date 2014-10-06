@@ -17,7 +17,6 @@ This package installs the SUSE Cloud product .iso into %containment_image_dest_d
 is intended to be installed on the SUSE Cloud admin server.
 
 %prep
-%setup -c -n %name
 
 %build
 # empty: no compile job
