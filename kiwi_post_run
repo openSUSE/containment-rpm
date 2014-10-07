@@ -10,13 +10,14 @@ BUILD_DIR=/usr/lib/build
 
 cd $IMAGE_DIR
 
-STEM=$(rpm --eval '%containment_image_name')
+NAME=$(rpm --eval '%containment_image_name')
 EXT=$( rpm --eval '%containment_image_extension')
-EXT=".${EXT#.}"
-IMAGE=$(echo ${STEM}*1$EXT)
+PREFIX=$(rpm --eval '%containment_image_prefix')
+SUFFIX=$( rpm --eval '%containment_image_suffix')
+IMAGE=$(echo ${PREFIX}*${SUFFIX})
 echo "Attempting to wrapping $IMAGE in a containment rpm ..."
 
-NAME="${STEM}-iso"
+NAME="${NAME}-${EXT}"
 RELEASE=$(date +%Y%m%d%H%M%S)
 
 # Extracting the version is a bit more complicated.
@@ -27,18 +28,16 @@ RELEASE=$(date +%Y%m%d%H%M%S)
 # whereas .isos from OBS builds look something like this:
 #
 #    SUSE-CLOUD-4-x86_64-Build0007-Media{1,2,3}.iso
+#    SUSE-CLOUD-SLE11-SP3-DEPS-x86_64-Build0003-Media.iso
 #
 # $IMAGE should contain the filename of the first of these 3 .isos.
-VERSION="${IMAGE#$STEM}"
-VERSION="${VERSION%1$EXT}"
+VERSION="${IMAGE#$PREFIX}"
+VERSION="${VERSION%$SUFFIX}"
 if [ -z "$VERSION" ]; then
-    echo "Local .iso build detected"
+    echo "Local build detected"
     # Just arbitrarily assign the version since we have nothing else
     # to go on.
     VERSION=1
-else
-    VERSION="${VERSION%-Media}"
-    VERSION="${VERSION#-Build}"
 fi
 
 echo "name $NAME"
