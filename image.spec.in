@@ -2,7 +2,7 @@
 
 Url:            http://www.suse.com/cloud
 Name:           __NAME__
-Summary:        SUSE Cloud product .iso
+Summary:        %containment_image_description product .iso
 Version:        __VERSION__
 Release:        __RELEASE__
 Group:          System/Management
@@ -13,8 +13,11 @@ BuildArch:      noarch
 BuildRequires:  containment-rpm-config
 
 %description
-This package installs the SUSE Cloud product .iso into %containment_image_dest_dir.  It
-is intended to be installed on the SUSE Cloud admin server.
+This package installs the unpacked %containment_image_description product .iso into:
+
+  %containment_image_dest_dir
+
+It is intended to be installed on the SUSE Cloud admin server.
 
 %prep
 
