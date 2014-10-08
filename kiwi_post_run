@@ -30,6 +30,8 @@ RELEASE=$(date +%Y%m%d%H%M%S)
 #    SUSE-CLOUD-4-x86_64-Build0007-Media{1,2,3}.iso
 #    SUSE-CLOUD-SLE11-SP3-DEPS-x86_64-Build0003-Media.iso
 #
+# This discrepancy is filed as https://bugzilla.suse.com/show_bug.cgi?id=900109
+#
 # $IMAGE should contain the filename of the first of these 3 .isos.
 VERSION="${IMAGE#$PREFIX}"
 VERSION="${VERSION%$SUFFIX}"
