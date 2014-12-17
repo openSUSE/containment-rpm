@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 set -e
 set -u
@@ -14,7 +14,16 @@ NAME=$(rpm --eval '%containment_image_name')
 EXT=$( rpm --eval '%containment_image_extension')
 PREFIX=$(rpm --eval '%containment_image_prefix')
 SUFFIX=$( rpm --eval '%containment_image_suffix')
+
+shopt -s nullglob
 IMAGE=$(echo ${PREFIX}*${SUFFIX})
+
+if [ -z "$IMAGE" ]; then
+    echo "Couldn't find anything in $IMAGE_DIR matching ${PREFIX}*${SUFFIX}."
+    echo "Will skip containment rpm wrapping steps."
+    exit 0
+fi
+
 echo "Attempting to wrap $IMAGE in a containment rpm ..."
 
 NAME="${NAME}-${EXT}"
