@@ -15,7 +15,7 @@ EXT=$( rpm --eval '%containment_image_extension')
 PREFIX=$(rpm --eval '%containment_image_prefix')
 SUFFIX=$( rpm --eval '%containment_image_suffix')
 IMAGE=$(echo ${PREFIX}*${SUFFIX})
-echo "Attempting to wrapping $IMAGE in a containment rpm ..."
+echo "Attempting to wrap $IMAGE in a containment rpm ..."
 
 NAME="${NAME}-${EXT}"
 RELEASE=$(date +%Y%m%d%H%M%S)
