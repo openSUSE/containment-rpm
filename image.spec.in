@@ -8,11 +8,9 @@ Release:        __RELEASE__
 Group:          System/Management
 License:        GPLv2
 Source:         __SOURCE__
-Source1:        content.key
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildArch:      noarch
 BuildRequires:  containment-rpm-config
-
 %define temp_mnt /mnt/iso
 
 %description
@@ -32,12 +30,6 @@ mount %{S:0} %temp_mnt
 install -d -m 755 $RPM_BUILD_ROOT%containment_image_dest_dir
 cp -a %temp_mnt/* $RPM_BUILD_ROOT%containment_image_dest_dir
 umount %temp_mnt
-
-# Install a working key signature
-cp -p %{S:1} $RPM_BUILD_ROOT%containment_image_dest_dir
-
-%clean
-rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-, root, root)
