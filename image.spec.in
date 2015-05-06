@@ -29,7 +29,9 @@ mount %{S:0} %temp_mnt
 
 %install
 install -d -m 755 $RPM_BUILD_ROOT%containment_image_dest_dir
-cp -a %temp_mnt/* $RPM_BUILD_ROOT%containment_image_dest_dir
+cp -pr %temp_mnt/* $RPM_BUILD_ROOT%containment_image_dest_dir
+install -d -m 755 %{_rpmdir}/OTHER
+cp -pr %{S:0} %{_rpmdir}/OTHER
 umount %temp_mnt
 
 %files
