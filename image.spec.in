@@ -8,11 +8,9 @@ Release:        __RELEASE__
 Group:          System/Management
 License:        GPLv2
 Source:         __SOURCE__
-Source1:        content.key
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildArch:      noarch
 BuildRequires:  containment-rpm-config
-
 %define temp_mnt /mnt/iso
 
 %description
@@ -23,22 +21,20 @@ This package installs the unpacked %containment_image_description product .iso i
 It is intended to be installed on the SUSE Cloud admin server.
 
 %prep
+
+%build
 mkdir -p %temp_mnt
 mount %{S:0} %temp_mnt
 
-%build
 
 %install
 install -d -m 755 $RPM_BUILD_ROOT%containment_image_dest_dir
-cp -a %temp_mnt/* $RPM_BUILD_ROOT%containment_image_dest_dir
+cp -pr %temp_mnt/* $RPM_BUILD_ROOT%containment_image_dest_dir
+install -d -m 755 %{_rpmdir}/OTHER
+cp -pr %{S:0} %{_rpmdir}/OTHER
 umount %temp_mnt
-
-# Install a working key signature
-cp -p %{S:1} $RPM_BUILD_ROOT%containment_image_dest_dir
-
-%clean
-rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-, root, root)
+%containment_extra_files
 %containment_image_dest_dir

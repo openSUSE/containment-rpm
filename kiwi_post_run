@@ -55,18 +55,11 @@ echo "name $NAME"
 echo "version $VERSION"
 echo "release $RELEASE"
 
+mkdir -p $TOPDIR/OTHER
+
 sed -e "s/__NAME__/$NAME/g" \
     -e "s/__VERSION__/$VERSION/g" \
     -e "s/__RELEASE__/$RELEASE/g" \
     -e "s/__SOURCE__/$IMAGE/g" \
     < $BUILD_DIR/image.spec.in \
-    > $BUILD_DIR/image.spec
-
-ln $IMAGE $TOPDIR/SOURCES
-
-rpmbuild -ba $BUILD_DIR/image.spec
-
-# required for the BS to find the rpm, because it is
-# a "non-standard result file for KIWI"
-mkdir -p $TOPDIR/OTHER
-mv $TOPDIR/RPMS/noarch/$NAME-$VERSION-$RELEASE.noarch.rpm $TOPDIR/OTHER/
+    > $TOPDIR/OTHER/image.followup.spec
