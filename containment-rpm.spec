@@ -50,12 +50,10 @@ mkdir -p %{buildroot}/usr/lib/build/
 install -m 644 image.spec.in %{buildroot}/usr/lib/build/
 install -m 755 kiwi_post_run %{buildroot}/usr/lib/build/
 install -d                   %{buildroot}%{_sourcedir}
-install -m 644 content.key   %{buildroot}%{_sourcedir}
 
 %files
 %defattr(-,root,root)
 /usr/lib/build/kiwi_post_run
 /usr/lib/build/image.spec.in
-%_sourcedir/content.key
 
 %changelog
