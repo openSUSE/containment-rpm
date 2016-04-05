@@ -4,7 +4,7 @@ Summary:        %containment_image_description product .iso
 Version:        __VERSION__
 Release:        __RELEASE__
 Group:          System/Management
-License:        GPLv2
+License:        GPL-2.0
 Source:         __SOURCE__
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildArch:      noarch
