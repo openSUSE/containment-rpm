@@ -23,6 +23,7 @@ It is intended to be installed on the SUSE Cloud admin server.
 %build
 
 bsdtar xf %{S:0}
+chmod -R u+w *
 
 
 %install
