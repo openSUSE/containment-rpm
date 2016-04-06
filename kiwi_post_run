@@ -62,4 +62,4 @@ sed -e "s/__NAME__/$NAME/g" \
     -e "s/__RELEASE__/$RELEASE/g" \
     -e "s/__SOURCE__/$IMAGE/g" \
     < $BUILD_DIR/image.spec.in \
-    > $TOPDIR/OTHER/image.followup.spec
+    > "$TOPDIR/OTHER/$NAME.followup.spec"
