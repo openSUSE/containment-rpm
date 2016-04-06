@@ -37,5 +37,3 @@ cp -pr %{S:0} %{_rpmdir}/OTHER
 %defattr(-, root, root)
 %{containment_extra_files}
 %{containment_image_dest_dir}
-
-%changelog
