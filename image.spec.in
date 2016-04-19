@@ -1,36 +1,39 @@
-Url:            http://www.suse.com/cloud
 Name:           __NAME__
-Summary:        %containment_image_description product .iso
+Summary:        %{containment_image_description} product .iso
 Version:        __VERSION__
 Release:        __RELEASE__
+Url:            http://www.suse.com/cloud
 Group:          System/Management
-License:        GPLv2
-Source:         __SOURCE__
-BuildRoot:      %{_tmppath}/%{name}-%{version}-build
-BuildArch:      noarch
+License:        GPL-2.0
+Source0:        __SOURCE__
 BuildRequires:  containment-rpm-config
 BuildRequires:  bsdtar
+BuildRequires:  fdupes
+BuildRoot:      %{_tmppath}/%{name}-%{version}-build
+BuildArch:      noarch
 
 %description
-This package installs the unpacked %containment_image_description product .iso into:
+This package installs the unpacked %{containment_image_description} product .iso into:
 
-  %containment_image_dest_dir
+  %{containment_image_dest_dir}
 
 It is intended to be installed on the SUSE Cloud admin server.
 
 %prep
 
 %build
-
-bsdtar xf %{S:0}
-
+bsdtar xf %{SOURCE0}
+chmod -R u+w *
 
 %install
-install -d -m 755 $RPM_BUILD_ROOT%containment_image_dest_dir
-cp -pr * $RPM_BUILD_ROOT%containment_image_dest_dir
+install -d -m 755 %{buildroot}%{containment_image_dest_dir}
+cp -pr * %{buildroot}%{containment_image_dest_dir}
+%fdupes %{buildroot}%{containment_image_dest_dir}
+
 install -d -m 755 %{_rpmdir}/OTHER
 cp -pr %{S:0} %{_rpmdir}/OTHER
+
 %files
 %defattr(-, root, root)
-%containment_extra_files
-%containment_image_dest_dir
+%{containment_extra_files}
+%{containment_image_dest_dir}

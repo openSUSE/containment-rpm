@@ -14,6 +14,7 @@ NAME=$(rpm --eval '%containment_image_name')
 EXT=$( rpm --eval '%containment_image_extension')
 PREFIX=$(rpm --eval '%containment_image_prefix')
 SUFFIX=$( rpm --eval '%containment_image_suffix')
+MAIL=$( rpm --eval '%containment_image_mail')
 
 shopt -s nullglob
 IMAGE=$(echo ${PREFIX}*${SUFFIX})
@@ -62,4 +63,11 @@ sed -e "s/__NAME__/$NAME/g" \
     -e "s/__RELEASE__/$RELEASE/g" \
     -e "s/__SOURCE__/$IMAGE/g" \
     < $BUILD_DIR/image.spec.in \
-    > $TOPDIR/OTHER/image.followup.spec
+    > "$TOPDIR/OTHER/$NAME.followup.spec"
+
+cat <<EOF >> "$TOPDIR/OTHER/$NAME.followup.spec"
+
+%changelog
+* $(date +"%a %b %d %Y") $MAIL
+- Automatic build.
+EOF
