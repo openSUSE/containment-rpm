@@ -26,9 +26,12 @@ Url:            https://github.com/openSUSE/%{name}
 Group:          System/Management
 Source:         %{name}-%{version}.tar.bz2
 BuildRequires:  filesystem
+# BuildRequires from the generated spec file, that need to be installed
+Requires:       bsdtar
+Requires:       containment-rpm-config
+Requires:       fdupes
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildArch:      noarch
-Requires:       containment-rpm-config
 
 %description
 OBS kiwi_post_run hook to wrap a kiwi-produced image in an rpm package.
