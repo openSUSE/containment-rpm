@@ -1,4 +1,7 @@
-# Copyright (c) 2010 SUSE LINUX Products GmbH, Nuernberg, Germany.
+#
+# spec file for package containment-rpm
+#
+# Copyright (c) 2012 SUSE LINUX Products GmbH, Nuernberg, Germany.
 #
 # All modifications and additions to the file contributed by third parties
 # remain the property of their copyright owners, unless otherwise agreed
@@ -15,19 +18,30 @@
 # norootforbuild
 
 Name:           containment-rpm
-Version:        __VERSION__
+Version:        0
 Release:        0
 License:        MIT
-Summary:        Wraps OBS/kiwi-built images in rpms.
+Summary:        Wraps OBS/kiwi-built images in rpms
 Url:            https://github.com/openSUSE/%{name}
 Group:          System/Management
-Source:         %{name}-%{version}.tar.gz
+Source:         %{name}-%{version}.tar.bz2
 BuildRequires:  filesystem
+# BuildRequires from the generated spec file, that need to be installed
+Requires:       bsdtar
+Requires:       containment-rpm-config
+Requires:       fdupes
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildArch:      noarch
 
 %description
 OBS kiwi_post_run hook to wrap a kiwi-produced image in an rpm package.
+
+This package should be required by the Build Service project's meta
+prjconf, so that the kiwi_post_run hook is present in the kiwi image
+and gets executed at the end of the image build.  It will then build
+an rpm which contains the newly-produced image from kiwi (using
+image.spec.in), and place the rpm in the correct location that it
+becomes an additional build artefact.
 
 %prep
 %setup -q
@@ -38,6 +52,7 @@ OBS kiwi_post_run hook to wrap a kiwi-produced image in an rpm package.
 mkdir -p %{buildroot}/usr/lib/build/
 install -m 644 image.spec.in %{buildroot}/usr/lib/build/
 install -m 755 kiwi_post_run %{buildroot}/usr/lib/build/
+install -d                   %{buildroot}%{_sourcedir}
 
 %files
 %defattr(-,root,root)
@@ -45,4 +60,3 @@ install -m 755 kiwi_post_run %{buildroot}/usr/lib/build/
 /usr/lib/build/image.spec.in
 
 %changelog
-

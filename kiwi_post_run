@@ -1,38 +1,73 @@
-#!/bin/sh -eu
+#!/bin/bash
+
+set -e
+set -u
 
 : ${TOPDIR:=/usr/src/packages}
 
-TARGET_DIR=$TOPDIR/KIWI-vmx/
-RPM_SOURCE_DIR=$TOPDIR/SOURCES
-FILES_DIR=/usr/lib/build
+IMAGE_DIR=$TOPDIR/KIWI
+BUILD_DIR=/usr/lib/build
 
-cd $TARGET_DIR
+cd $IMAGE_DIR
 
-STEM=Containment-Studio
-EXT=.qcow2
-SOURCE=$(echo $STEM-*$EXT)
+NAME=$(rpm --eval '%containment_image_name')
+EXT=$( rpm --eval '%containment_image_extension')
+PREFIX=$(rpm --eval '%containment_image_prefix')
+SUFFIX=$( rpm --eval '%containment_image_suffix')
+MAIL=$( rpm --eval '%containment_image_mail')
 
-# extract os/platform, version, release from the source tarball
-set -- $(echo $SOURCE | sed -r "s/(.*)-(.*)$EXT/\1 \2/")
-NAME=$(echo $1 | sed -r "s/.x86_64//g")
-VERSION=$2
+shopt -s nullglob
+IMAGE=$(echo ${PREFIX}*${SUFFIX})
+
+if [ -z "$IMAGE" ]; then
+    echo "Couldn't find anything in $IMAGE_DIR matching ${PREFIX}*${SUFFIX}."
+    echo "Will skip containment rpm wrapping steps."
+    exit 0
+fi
+
+echo "Attempting to wrap $IMAGE in a containment rpm ..."
+
+NAME="${NAME}-${EXT}"
 RELEASE=$(date +%Y%m%d%H%M%S)
+
+# Extracting the version is a bit more complicated.
+# For some reason, .isos from local builds look something like this:
+#
+#    SUSE-CLOUD-4-x86_64{1,2,3}.iso
+#
+# whereas .isos from OBS builds look something like this:
+#
+#    SUSE-CLOUD-4-x86_64-Build0007-Media{1,2,3}.iso
+#    SUSE-CLOUD-SLE11-SP3-DEPS-x86_64-Build0003-Media.iso
+#
+# This discrepancy is filed as https://bugzilla.suse.com/show_bug.cgi?id=900109
+#
+# $IMAGE should contain the filename of the first of these 3 .isos.
+VERSION="${IMAGE#$PREFIX}"
+VERSION="${VERSION%$SUFFIX}"
+if [ -z "$VERSION" ]; then
+    echo "Local build detected"
+    # Just arbitrarily assign the version since we have nothing else
+    # to go on.
+    VERSION=1
+fi
 
 echo "name $NAME"
 echo "version $VERSION"
 echo "release $RELEASE"
 
+mkdir -p $TOPDIR/OTHER
+
 sed -e "s/__NAME__/$NAME/g" \
     -e "s/__VERSION__/$VERSION/g" \
     -e "s/__RELEASE__/$RELEASE/g" \
-    -e "s/__SOURCE__/$SOURCE/g" \
-    < $FILES_DIR/image.spec.in \
-    > $FILES_DIR/image.spec
+    -e "s/__SOURCE__/$IMAGE/g" \
+    < $BUILD_DIR/image.spec.in \
+    > "$TOPDIR/OTHER/$NAME.followup.spec"
 
-tar -cjf $RPM_SOURCE_DIR/$NAME-$VERSION-$RELEASE-vmx.tar.bz2 $SOURCE
-rpmbuild -ba $FILES_DIR/image.spec
+cat <<EOF >> "$TOPDIR/OTHER/$NAME.followup.spec"
 
-# required for the BS to find the rpm, because it is
-# a "non-standard result file for KIWI"
-mkdir -p $TOPDIR/OTHER
-mv $TOPDIR/RPMS/noarch/$NAME-$VERSION-$RELEASE.noarch.rpm $TOPDIR/OTHER/
+%changelog
+* $(date +"%a %b %d %Y") $MAIL
+- Automatic build.
+EOF

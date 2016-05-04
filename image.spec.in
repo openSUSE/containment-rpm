@@ -1,38 +1,39 @@
-Url:            http://www.susestudio.com
 Name:           __NAME__
-Summary:        Studio Build System
+Summary:        %{containment_image_description} product .iso
 Version:        __VERSION__
 Release:        __RELEASE__
+Url:            http://www.suse.com/cloud
 Group:          System/Management
-License:        GPLv2
-Source:         %{name}-%{version}-%{release}-vmx.tar.bz2
+License:        GPL-2.0
+Source0:        __SOURCE__
+BuildRequires:  containment-rpm-config
+BuildRequires:  bsdtar
+BuildRequires:  fdupes
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildArch:      noarch
 
 %description
-Containment appliance to build studio images secured by a VM layer
+This package installs the unpacked %{containment_image_description} product .iso into:
 
-Authors:
---------
-    Marcus Schaefer <ms@suse.de>
-    Jordi Massaguer Pla <jmassaguerpla@suse.de>
+  %{containment_image_dest_dir}
+
+It is intended to be installed on the SUSE Cloud admin server.
 
 %prep
-%setup -c -n %name
 
 %build
-# empty no compile job
+bsdtar xf %{SOURCE0}
+chmod -R u+w *
 
 %install
+install -d -m 755 %{buildroot}%{containment_image_dest_dir}
+cp -pr * %{buildroot}%{containment_image_dest_dir}
+%fdupes %{buildroot}%{containment_image_dest_dir}
 
-install -d -m 755 $RPM_BUILD_ROOT/usr/share/studio/image
-mv *.qcow2 $RPM_BUILD_ROOT/usr/share/studio/image
-
-%clean
-rm -rf $RPM_BUILD_ROOT
+install -d -m 755 %{_rpmdir}/OTHER
+cp -pr %{S:0} %{_rpmdir}/OTHER
 
 %files
 %defattr(-, root, root)
-%dir /usr/share/studio
-/usr/share/studio/image
-
+%{containment_extra_files}
+%{containment_image_dest_dir}
